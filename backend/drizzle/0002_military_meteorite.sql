@@ -1,0 +1,1 @@
+ALTER TABLE "users" ALTER COLUMN "user_avatar" SET DATA TYPE text;
