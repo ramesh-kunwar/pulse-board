@@ -11,7 +11,7 @@ pollsRouter.post(
   validateRequestBody(createPollSchema),
   pollsController.createPollHandler
 );
-pollsRouter.get("/", pollsController.getPollsHandler);
+pollsRouter.get("/", isAuthenticated, pollsController.getPollsHandler);
 pollsRouter.get("/:id", pollsController.getPollHandler);
 pollsRouter.delete("/:id", isAuthenticated, pollsController.deletePollHandler);
 

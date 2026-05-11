@@ -1,4 +1,5 @@
 import { optionsTable, pollsTable, questionsTable } from "../../db/schema.js";
+import { eq } from "drizzle-orm";
 import { db } from "../../index.js";
 import { CreatePollDto } from "./dto/create-poll.dto.js";
 
@@ -48,4 +49,19 @@ export const createPoll = async (data: CreatePollDto, creator_id: string) => {
 
     return poll;
   });
+};
+
+export const getPolls = async (creator_id: string) => {
+  const polls = await db
+    .select({
+      id: pollsTable.id,
+      title: pollsTable.title,
+      status: pollsTable.status,
+      isAnonymous: pollsTable.isAnonymous,
+      expiresAt: pollsTable.expiresAt,
+      createdAt: pollsTable.createdAt,
+    })
+    .from(pollsTable)
+    .where(eq(pollsTable.creator_id, creator_id));
+  return polls;
 };
