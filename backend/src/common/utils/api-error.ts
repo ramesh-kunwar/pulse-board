@@ -34,5 +34,8 @@ class ApiError extends Error {
   static internalError(message = "Internal server error") {
     return new ApiError(500, message);
   }
+  static unprocessableEntity(message = "Unprocessable entity") {
+    return new ApiError(422, message);
+  }
 }
 export default ApiError;

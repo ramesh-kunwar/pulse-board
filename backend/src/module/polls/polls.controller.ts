@@ -15,11 +15,15 @@ export const getPollByIdHandler = async (req: Request, res: Response) => {
   const userId = req.user?.id;
   console.log(userId, " from controller");
   const poll = await pollsService.getPollById(pollId, userId);
-  if (!poll) {
-    throw ApiError.notFound("Poll not found");
-  }
+
   ApiResponse.ok(res, "Poll Retrieved Successfully", poll);
 };
 export const deletePollHandler = async (req: Request, res: Response) => {};
-export const closePollHandler = async (req: Request, res: Response) => {};
+export const closePollHandler = async (req: Request, res: Response) => {
+  const pollId = req.params.id as string;
+  const userId = req.user.id;
+  const poll = await pollsService.closePoll(pollId, userId);
+
+  ApiResponse.ok(res, "Poll Closed Successfully", poll);
+};
 export const publishPollHandler = async (req: Request, res: Response) => {};

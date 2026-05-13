@@ -87,3 +87,30 @@ export const getPollById = async (poll_id: string, user_id: string) => {
   // 5. PUBLISHED or ACTIVE → return poll with questions and options
   return poll;
 };
+
+export const closePoll = async (poll_id: string, user_id: string) => {
+  // 1. fetch poll
+  const poll = await db.query.pollsTable.findFirst({
+    where: eq(pollsTable.id, poll_id),
+  });
+  if (!poll) {
+    throw ApiError.notFound("Poll not found");
+  }
+  // 2. check if user is the creator
+  if (user_id !== poll.creator_id) {
+    throw ApiError.forbidden("You are not the owner of this poll");
+  }
+
+  // check status
+  if (poll.status !== "ACTIVE") {
+    throw ApiError.unprocessableEntity("Only active polls can be closed");
+  }
+
+  // 3. update poll status
+  const updatedPoll = await db
+    .update(pollsTable)
+    .set({ status: "CLOSED" })
+    .where(eq(pollsTable.id, poll_id))
+    .returning();
+  return updatedPoll[0];
+};
