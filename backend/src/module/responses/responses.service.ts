@@ -8,6 +8,7 @@ import {
 } from "../../db/schema.js";
 import { db } from "../../index.js";
 import ApiError from "../../common/utils/api-error.js";
+import { io } from "../../socket.js";
 
 export const submitResponse = async (
   pollId: string,
@@ -119,4 +120,7 @@ export const submitResponse = async (
 
     await trx.insert(response_answersTable).values(responseAnswersValues);
   });
+
+  // emit to poll room after successful insert
+  io.to(`poll:${pollId}`).emit("response:submitted", { pollId });
 };
