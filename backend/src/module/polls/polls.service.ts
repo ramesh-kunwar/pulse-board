@@ -128,3 +128,30 @@ export const deletePoll = async (poll_id: string, user_id: string) => {
 
   await db.delete(pollsTable).where(eq(pollsTable.id, poll_id));
 };
+
+export const publishPoll = async (poll_id: string, user_id: string) => {
+  // 1. fetch poll
+  const poll = await db.query.pollsTable.findFirst({
+    where: eq(pollsTable.id, poll_id),
+  });
+  if (!poll) {
+    throw ApiError.notFound("Poll not found");
+  }
+  // 2. check if user is the creator
+  if (user_id !== poll.creator_id) {
+    throw ApiError.notFound("Poll not found");
+  }
+
+  // check status
+  if (poll.status !== "CLOSED") {
+    throw ApiError.unprocessableEntity("Only closed polls can be published");
+  }
+
+  // 3. update poll status
+  const updatedPoll = await db
+    .update(pollsTable)
+    .set({ status: "PUBLISHED" })
+    .where(eq(pollsTable.id, poll_id))
+    .returning();
+  return updatedPoll[0];
+};

@@ -35,4 +35,10 @@ export const deletePollHandler = async (req: Request, res: Response) => {
   ApiResponse.ok(res, "Poll Deleted Successfully");
 };
 
-export const publishPollHandler = async (req: Request, res: Response) => {};
+export const publishPollHandler = async (req: Request, res: Response) => {
+  const pollId = req.params.id as string;
+  const userId = req.user.id;
+  const poll = await pollsService.publishPoll(pollId, userId);
+
+  ApiResponse.ok(res, "Poll Published Successfully", poll);
+};
