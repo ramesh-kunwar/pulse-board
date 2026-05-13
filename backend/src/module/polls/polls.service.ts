@@ -114,3 +114,17 @@ export const closePoll = async (poll_id: string, user_id: string) => {
     .returning();
   return updatedPoll[0];
 };
+
+export const deletePoll = async (poll_id: string, user_id: string) => {
+  const poll = await db.query.pollsTable.findFirst({
+    where: eq(pollsTable.id, poll_id),
+  });
+  if (!poll) {
+    throw ApiError.notFound("Poll not found");
+  }
+  if (poll.creator_id !== user_id) {
+    throw ApiError.notFound("Poll not found");
+  }
+
+  await db.delete(pollsTable).where(eq(pollsTable.id, poll_id));
+};
