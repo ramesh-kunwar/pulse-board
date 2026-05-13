@@ -3,7 +3,7 @@ import * as z from "zod";
 export const createPollSchema = z.object({
   title: z.string().min(1, "title is required").max(255),
   isAnonymous: z.boolean().default(false),
-  expiresAt: z.string().datetime().optional(),
+  expiresAt: z.iso.datetime().optional(),
   questions: z
     .array(
       z.object({

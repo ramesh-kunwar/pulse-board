@@ -18,6 +18,12 @@ export const pollStatusEnum = pgEnum("poll_status", [
   "PUBLISHED",
 ] as const);
 
+export const PollStatus = {
+  ACTIVE: "ACTIVE",
+  CLOSED: "CLOSED",
+  PUBLISHED: "PUBLISHED",
+} as const;
+
 export const usersTable = pgTable("users", {
   id: uuid("id").primaryKey().defaultRandom(),
   firstName: varchar("first_name", { length: 255 }).notNull(),
@@ -148,3 +154,36 @@ export const optionsRelations = relations(optionsTable, ({ one }) => ({
     references: [questionsTable.id],
   }),
 }));
+
+export const responsesRelations = relations(
+  responsesTable,
+  ({ one, many }) => ({
+    poll: one(pollsTable, {
+      fields: [responsesTable.poll_id],
+      references: [pollsTable.id],
+    }),
+    submittedByUser: one(usersTable, {
+      fields: [responsesTable.submittedBy],
+      references: [usersTable.id],
+    }),
+    answers: many(response_answersTable),
+  })
+);
+
+export const responseAnswersRelations = relations(
+  response_answersTable,
+  ({ one }) => ({
+    response: one(responsesTable, {
+      fields: [response_answersTable.response_id],
+      references: [responsesTable.id],
+    }),
+    question: one(questionsTable, {
+      fields: [response_answersTable.question_id],
+      references: [questionsTable.id],
+    }),
+    option: one(optionsTable, {
+      fields: [response_answersTable.option_id],
+      references: [optionsTable.id],
+    }),
+  })
+);

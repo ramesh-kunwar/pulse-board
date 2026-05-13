@@ -6,6 +6,7 @@ import {
 } from "../../common/middleware/auth.middleware.js";
 import { createPollSchema } from "./dto/create-poll.dto.js";
 import * as pollsController from "./polls.controller.js";
+import responsesRouter from "../responses/responses.routes.js";
 const pollsRouter: Router = express.Router();
 
 pollsRouter.post(
@@ -29,4 +30,7 @@ pollsRouter.post(
   isAuthenticated,
   pollsController.closePollHandler
 );
+
+// response router
+pollsRouter.use("/", responsesRouter);
 export default pollsRouter;
