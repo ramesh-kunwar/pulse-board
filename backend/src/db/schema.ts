@@ -9,6 +9,7 @@ import {
   integer,
   unique,
 } from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
 export const ROLES = ["USER", "ADMIN"] as const;
 export const roleEnum = pgEnum("role", ROLES);
 export const pollStatusEnum = pgEnum("poll_status", [
@@ -120,3 +121,30 @@ export const response_answersTable = pgTable("response_answers", {
     .references(() => optionsTable.id, { onDelete: "cascade" }),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
+
+// Relations
+export const pollsRelations = relations(pollsTable, ({ one, many }) => ({
+  creator: one(usersTable, {
+    fields: [pollsTable.creator_id],
+    references: [usersTable.id],
+  }),
+  questions: many(questionsTable),
+}));
+
+export const questionsRelations = relations(
+  questionsTable,
+  ({ one, many }) => ({
+    poll: one(pollsTable, {
+      fields: [questionsTable.poll_id],
+      references: [pollsTable.id],
+    }),
+    options: many(optionsTable),
+  })
+);
+
+export const optionsRelations = relations(optionsTable, ({ one }) => ({
+  question: one(questionsTable, {
+    fields: [optionsTable.question_id],
+    references: [questionsTable.id],
+  }),
+}));

@@ -1,6 +1,9 @@
 import express, { Router } from "express";
 import { validateRequestBody } from "../../common/middleware/validate.middleware.js";
-import { isAuthenticated } from "../../common/middleware/auth.middleware.js";
+import {
+  isAuthenticated,
+  optionalAuth,
+} from "../../common/middleware/auth.middleware.js";
 import { createPollSchema } from "./dto/create-poll.dto.js";
 import * as pollsController from "./polls.controller.js";
 const pollsRouter: Router = express.Router();
@@ -12,7 +15,7 @@ pollsRouter.post(
   pollsController.createPollHandler
 );
 pollsRouter.get("/", isAuthenticated, pollsController.getPollsHandler);
-pollsRouter.get("/:id", pollsController.getPollHandler);
+pollsRouter.get("/:id", optionalAuth, pollsController.getPollByIdHandler);
 pollsRouter.delete("/:id", isAuthenticated, pollsController.deletePollHandler);
 
 pollsRouter.post(

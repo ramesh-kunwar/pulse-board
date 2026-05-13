@@ -2,6 +2,7 @@ import { optionsTable, pollsTable, questionsTable } from "../../db/schema.js";
 import { eq } from "drizzle-orm";
 import { db } from "../../index.js";
 import { CreatePollDto } from "./dto/create-poll.dto.js";
+import ApiError from "../../common/utils/api-error.js";
 
 export const createPoll = async (data: CreatePollDto, creator_id: string) => {
   return await db.transaction(async (trx) => {
@@ -64,4 +65,25 @@ export const getPolls = async (creator_id: string) => {
     .from(pollsTable)
     .where(eq(pollsTable.creator_id, creator_id));
   return polls;
+};
+
+export const getPollById = async (poll_id: string, user_id: string) => {
+  console.log(user_id, " from service");
+  // 1. fetch poll
+  const poll = await db.query.pollsTable.findFirst({
+    where: eq(pollsTable.id, poll_id),
+    with: { questions: { with: { options: true } } },
+  });
+
+  // 2. not found
+  if (!poll) throw ApiError.notFound("Poll not found");
+
+  // 3. creator → return everything
+  if (user_id === poll.creator_id) return poll;
+
+  // 4. non-creator checks
+  if (poll.status === "CLOSED") throw ApiError.forbidden("Poll is closed");
+
+  // 5. PUBLISHED or ACTIVE → return poll with questions and options
+  return poll;
 };
