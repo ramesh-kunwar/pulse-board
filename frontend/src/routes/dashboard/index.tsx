@@ -1,6 +1,16 @@
+// src/routes/dashboard/index.tsx
 import { createFileRoute, useNavigate, Link } from '@tanstack/react-router'
 import { useAuth } from '#/context/AuthContext'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import { getPollsApi } from '#/features/polls/api/pollsApi'
+
+type Poll = {
+  id: string
+  title: string
+  status: string
+  createdAt: string
+  _count?: { responses: number }
+}
 
 export const Route = createFileRoute('/dashboard/')({
   component: DashboardPage,
@@ -9,12 +19,21 @@ export const Route = createFileRoute('/dashboard/')({
 function DashboardPage() {
   const { user, isLoading } = useAuth()
   const navigate = useNavigate()
+  const [polls, setPolls] = useState<Poll[]>([])
+  const [pollsLoading, setPollsLoading] = useState(true)
 
   useEffect(() => {
     if (!isLoading && !user) {
       navigate({ to: '/auth/login' })
     }
   }, [user, isLoading])
+
+  useEffect(() => {
+    if (!user) return
+    getPollsApi()
+      .then((res) => setPolls(res.data))
+      .finally(() => setPollsLoading(false))
+  }, [user])
 
   if (isLoading)
     return (
@@ -31,12 +50,18 @@ function DashboardPage() {
         <h1 className="text-lg font-bold text-gray-900">Pulse Board</h1>
         <div className="flex items-center gap-4">
           <span className="text-sm text-gray-600">Hi, {user.firstName}</span>
-          <Link
-            to="/auth/login"
+          <button
+            onClick={async () => {
+              await fetch('http://localhost:4000/api/auth/sign-out', {
+                method: 'POST',
+                credentials: 'include',
+              })
+              navigate({ to: '/auth/login' })
+            }}
             className="text-sm text-red-500 hover:underline"
           >
             Logout
-          </Link>
+          </button>
         </div>
       </nav>
 
@@ -51,9 +76,45 @@ function DashboardPage() {
           </Link>
         </div>
 
-        <div className="bg-white rounded-xl shadow p-6 text-center text-gray-400">
-          <p>No polls yet. Create your first poll.</p>
-        </div>
+        {pollsLoading ? (
+          <p className="text-gray-400 text-sm">Loading polls...</p>
+        ) : polls.length === 0 ? (
+          <div className="bg-white rounded-xl shadow p-6 text-center text-gray-400">
+            <p>No polls yet. Create your first poll.</p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {polls.map((poll) => (
+              <div
+                key={poll.id}
+                className="bg-white rounded-xl shadow p-4 flex items-center justify-between"
+              >
+                <div>
+                  <h3 className="font-medium text-gray-900">{poll.title}</h3>
+                  <p className="text-xs text-gray-400 mt-0.5">
+                    Status: <span className="capitalize">{poll.status}</span>
+                  </p>
+                </div>
+                <div className="flex gap-3">
+                  <Link
+                    to="/polls/$pollId/analytics"
+                    params={{ pollId: poll.id }}
+                    className="text-sm text-blue-600 hover:underline"
+                  >
+                    Analytics
+                  </Link>
+                  <Link
+                    to="/polls/$pollId"
+                    params={{ pollId: poll.id }}
+                    className="text-sm text-gray-500 hover:underline"
+                  >
+                    View
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </main>
     </div>
   )
