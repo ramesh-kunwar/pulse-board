@@ -29,7 +29,6 @@ export const loginHandler = async (req: Request, res: Response) => {
     id: user.id,
     firstName: user.firstName,
     email: user.email,
-    accessToken,
   });
 };
 
@@ -67,8 +66,6 @@ export const refreshHandler = async (
   return ApiResponse.ok(res, "Access and refres token regenerated", {
     id: user.user.id,
     email: user.user.email,
-    accessToken: user.accessToken,
-    refreshToken: user.newRefreshToken,
   });
 };
 
