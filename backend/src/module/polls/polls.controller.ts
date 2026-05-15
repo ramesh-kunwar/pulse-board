@@ -42,3 +42,11 @@ export const publishPollHandler = async (req: Request, res: Response) => {
 
   ApiResponse.ok(res, "Poll Published Successfully", poll);
 };
+
+export const getAnalyticsHandler = async (req: Request, res: Response) => {
+  const pollId = req.params.id as string;
+  const userId = req.user.id;
+  const analytics = await pollsService.getAnalytics(pollId, userId);
+
+  ApiResponse.ok(res, "Poll Analytics Retrieved Successfully", analytics);
+};

@@ -31,6 +31,12 @@ pollsRouter.post(
   pollsController.closePollHandler
 );
 
+pollsRouter.get(
+  "/:id/analytics",
+  isAuthenticated,
+  pollsController.getAnalyticsHandler
+);
+
 // response router
 pollsRouter.use("/", responsesRouter);
 export default pollsRouter;
