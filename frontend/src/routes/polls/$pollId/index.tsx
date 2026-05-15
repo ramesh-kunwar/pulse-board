@@ -1,6 +1,6 @@
 // src/routes/polls/$pollId/index.tsx
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { getPollApi } from '#/features/polls/api/pollsApi'
 import { submitResponseApi } from '#/features/responses/api/responseApi'
 
@@ -25,13 +25,22 @@ function PollPage() {
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(true)
+  const fetched = useRef(false) // ← add this
 
   useEffect(() => {
+    if (fetched.current) return
+    fetched.current = true
     getPollApi(pollId)
       .then((res) => setPoll(res.data))
       .catch(() => setError('Poll not found'))
       .finally(() => setLoading(false))
   }, [pollId])
+
+  useEffect(() => {
+    if (poll?.status === 'PUBLISHED') {
+      navigate({ to: '/polls/$pollId/results', params: { pollId } })
+    }
+  }, [poll])
 
   const handleSelect = (questionId: string, optionId: string) => {
     setAnswers((prev) => ({ ...prev, [questionId]: optionId }))
@@ -41,7 +50,6 @@ function PollPage() {
     if (!poll) return
     setError('')
 
-    // validate mandatory questions
     const unanswered = poll.questions.filter(
       (q) => q.is_mandatory && !answers[q.id],
     )
@@ -68,6 +76,7 @@ function PollPage() {
     }
   }
 
+  // conditional returns AFTER all hooks
   if (loading)
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -81,11 +90,6 @@ function PollPage() {
         <p className="text-red-500">{error}</p>
       </div>
     )
-
-  if (poll?.status === 'PUBLISHED') {
-    navigate({ to: '/polls/$pollId/results', params: { pollId } })
-    return null
-  }
 
   if (poll?.status === 'CLOSED')
     return (

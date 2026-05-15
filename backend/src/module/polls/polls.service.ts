@@ -229,6 +229,7 @@ export const getAnalytics = async (poll_id: string, user_id: string) => {
 
   return {
     pollId: poll_id,
+    status: poll.status,
     totalResponses: Number(totalResponses),
     questions,
   };
