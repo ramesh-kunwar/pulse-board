@@ -10,6 +10,7 @@ import { TanStackDevtools } from '@tanstack/react-devtools'
 import appCss from '../styles.css?url'
 import { AuthProvider } from '#/context/AuthContext'
 import { AuthInit } from '#/components/AuthInit'
+import { Navbar } from '#/components/Navbar'
 
 export const Route = createRootRoute({
   head: () => ({
@@ -32,6 +33,7 @@ function RootDocument() {
       <body>
         <AuthProvider>
           <AuthInit />
+          <Navbar />
           <Outlet />
         </AuthProvider>
         <TanStackDevtools

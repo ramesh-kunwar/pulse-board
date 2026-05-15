@@ -73,22 +73,14 @@ function AnalyticsPage() {
       <div className="max-w-2xl mx-auto px-6 space-y-6">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold text-gray-900">Analytics</h1>
-          <div className="flex gap-3">
-            {analytics?.status === 'ACTIVE' && (
-              <button
-                onClick={handlePublish}
-                className="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-700"
-              >
-                Publish Results
-              </button>
-            )}
+          {analytics?.status === 'ACTIVE' && (
             <button
-              onClick={() => navigate({ to: '/dashboard' })}
-              className="text-sm text-gray-500 hover:underline"
+              onClick={handlePublish}
+              className="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-700"
             >
-              ← Dashboard
+              Publish Results
             </button>
-          </div>
+          )}
         </div>
 
         <div className="bg-white rounded-xl shadow p-4">

@@ -3,7 +3,7 @@ import { createFileRoute, useNavigate, Link } from '@tanstack/react-router'
 import { useAuth } from '#/context/AuthContext'
 import { useEffect, useState } from 'react'
 import { getPollsApi } from '#/features/polls/api/pollsApi'
-import { logoutApi } from '#/features/auth/api/authApi'
+
 
 type Poll = {
   id: string
@@ -47,22 +47,6 @@ function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-        <h1 className="text-lg font-bold text-gray-900">Pulse Board</h1>
-        <div className="flex items-center gap-4">
-          <span className="text-sm text-gray-600">Hi, {user.firstName}</span>
-          <button
-            onClick={async () => {
-              await logoutApi()
-              navigate({ to: '/auth/login' })
-            }}
-            className="text-sm text-red-500 hover:underline"
-          >
-            Logout
-          </button>
-        </div>
-      </nav>
-
       <main className="max-w-4xl mx-auto px-6 py-8">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-semibold text-gray-900">My Polls</h2>
