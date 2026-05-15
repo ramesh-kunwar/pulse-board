@@ -1,9 +1,9 @@
 // src/routes/polls/$pollId/analytics.tsx
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { useEffect, useRef } from 'react'
+import { useEffect, useState } from 'react'
 import { useAuth } from '#/context/AuthContext'
 import { useAnalytics } from '#/features/analytics/hooks/useAnalytics'
-import { publishPollApi } from '#/features/polls/api/pollsApi'
+import { publishPollApi, closePollApi } from '#/features/polls/api/pollsApi'
 import { getSocket } from '#/lib/socket'
 
 export const Route = createFileRoute('/polls/$pollId/analytics')({
@@ -15,49 +15,44 @@ function AnalyticsPage() {
   const { user, isLoading } = useAuth()
   const navigate = useNavigate()
   const { analytics, loading, refetch } = useAnalytics(pollId)
-  const refetchRef = useRef(refetch)
-  useEffect(() => {
-    refetchRef.current = refetch
-  })
+  const [actionError, setActionError] = useState('')
 
-  // auth guard
   useEffect(() => {
     if (!isLoading && !user) navigate({ to: '/auth/login' })
   }, [user, isLoading])
 
-  // socket — join room and listen for new responses
   useEffect(() => {
     const socket = getSocket()
-
-    const onConnect = () => {
-      socket.emit('join:poll', pollId)
-    }
-    const onConnectError = (err: Error) =>
-      console.log('socket error:', err)
-    const onResponseSubmitted = () => {
-      refetchRef.current()
-    }
-
-    socket.on('connect', onConnect)
-    socket.on('connect_error', onConnectError)
-    socket.on('response:submitted', onResponseSubmitted)
-
     socket.connect()
-
+    socket.on('connect', () => console.log('socket connected:', socket.id))
+    socket.on('connect_error', (err) => console.log('socket error:', err))
+    socket.emit('join:poll', pollId)
+    socket.on('response:submitted', () => {
+      refetch()
+    })
     return () => {
-      socket.off('connect', onConnect)
-      socket.off('connect_error', onConnectError)
-      socket.off('response:submitted', onResponseSubmitted)
+      socket.off('response:submitted')
       socket.disconnect()
     }
   }, [pollId])
 
+  const handleClose = async () => {
+    setActionError('')
+    try {
+      await closePollApi(pollId)
+      refetch()
+    } catch (e: any) {
+      setActionError(e?.response?.data?.message || 'Failed to close poll')
+    }
+  }
+
   const handlePublish = async () => {
+    setActionError('')
     try {
       await publishPollApi(pollId)
       refetch()
-    } catch {
-      alert('Failed to publish')
+    } catch (e: any) {
+      setActionError(e?.response?.data?.message || 'Failed to publish poll')
     }
   }
 
@@ -72,16 +67,51 @@ function AnalyticsPage() {
     <div className="min-h-screen bg-gray-50 py-10">
       <div className="max-w-2xl mx-auto px-6 space-y-6">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-gray-900">Analytics</h1>
-          {analytics?.status === 'ACTIVE' && (
-            <button
-              onClick={handlePublish}
-              className="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-700"
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Analytics</h1>
+            <span
+              className={`text-xs font-medium px-2 py-0.5 rounded-full mt-1 inline-block ${
+                analytics?.status === 'ACTIVE'
+                  ? 'bg-green-100 text-green-700'
+                  : analytics?.status === 'CLOSED'
+                    ? 'bg-yellow-100 text-yellow-700'
+                    : 'bg-blue-100 text-blue-700'
+              }`}
             >
-              Publish Results
+              {analytics?.status}
+            </span>
+          </div>
+          <div className="flex gap-3 items-center">
+            {analytics?.status === 'ACTIVE' && (
+              <button
+                onClick={handleClose}
+                className="bg-yellow-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-yellow-600"
+              >
+                Close Poll
+              </button>
+            )}
+            {analytics?.status === 'CLOSED' && (
+              <button
+                onClick={handlePublish}
+                className="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-700"
+              >
+                Publish Results
+              </button>
+            )}
+            <button
+              onClick={() => navigate({ to: '/dashboard' })}
+              className="text-sm text-gray-500 hover:underline"
+            >
+              ← Dashboard
             </button>
-          )}
+          </div>
         </div>
+
+        {actionError && (
+          <div className="bg-red-50 border border-red-200 rounded-lg px-4 py-3 text-sm text-red-600">
+            {actionError}
+          </div>
+        )}
 
         <div className="bg-white rounded-xl shadow p-4">
           <p className="text-sm text-gray-500">Total Responses</p>

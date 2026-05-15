@@ -43,3 +43,8 @@ export const deletePollApi = async (id: string) => {
   const response = await api.delete(`/polls/${id}`)
   return response.data
 }
+
+export const closePollApi = async (id: string) => {
+  const response = await api.post(`/polls/${id}/close`)
+  return response.data
+}

@@ -169,7 +169,8 @@ export const getAnalytics = async (poll_id: string, user_id: string) => {
     with: { questions: { with: { options: true } } },
   });
   if (!poll) throw ApiError.notFound("Poll not found");
-  if (poll.creator_id !== user_id) throw ApiError.notFound("Poll not found");
+  if (poll.creator_id !== user_id && poll.status !== "PUBLISHED")
+    throw ApiError.notFound("Poll not found");
 
   // 2. total submissions for this poll
   const result = await db
