@@ -8,25 +8,10 @@ import {
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 import appCss from '../styles.css?url'
-import axios from 'axios'
-import { setAccessToken } from '#/lib/axios'
 import { AuthProvider } from '#/context/AuthContext'
-import { AuthSync } from '#/components/AuthSync'
+import { AuthInit } from '#/components/AuthInit'
 
 export const Route = createRootRoute({
-  beforeLoad: async () => {
-    try {
-      const { data } = await axios.post(
-        'http://localhost:4000/api/auth/refresh',
-        {},
-        { withCredentials: true },
-      )
-      setAccessToken(data.accessToken)
-      return { user: data.user }
-    } catch {
-      return { user: null }
-    }
-  },
   head: () => ({
     meta: [
       { charSet: 'utf-8' },
@@ -46,7 +31,7 @@ function RootDocument() {
       </head>
       <body>
         <AuthProvider>
-          <AuthSync />
+          <AuthInit />
           <Outlet />
         </AuthProvider>
         <TanStackDevtools

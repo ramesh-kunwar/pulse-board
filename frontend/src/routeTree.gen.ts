@@ -10,33 +10,128 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
+import { Route as PollsNewRouteImport } from './routes/polls/new'
+import { Route as AuthRegisterRouteImport } from './routes/auth/register'
+import { Route as AuthLoginRouteImport } from './routes/auth/login'
+import { Route as PollsPollIdIndexRouteImport } from './routes/polls/$pollId/index'
+import { Route as PollsPollIdResultsRouteImport } from './routes/polls/$pollId/results'
+import { Route as PollsPollIdAnalyticsRouteImport } from './routes/polls/$pollId/analytics'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardIndexRoute = DashboardIndexRouteImport.update({
+  id: '/dashboard/',
+  path: '/dashboard/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PollsNewRoute = PollsNewRouteImport.update({
+  id: '/polls/new',
+  path: '/polls/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRegisterRoute = AuthRegisterRouteImport.update({
+  id: '/auth/register',
+  path: '/auth/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthLoginRoute = AuthLoginRouteImport.update({
+  id: '/auth/login',
+  path: '/auth/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PollsPollIdIndexRoute = PollsPollIdIndexRouteImport.update({
+  id: '/polls/$pollId/',
+  path: '/polls/$pollId/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PollsPollIdResultsRoute = PollsPollIdResultsRouteImport.update({
+  id: '/polls/$pollId/results',
+  path: '/polls/$pollId/results',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PollsPollIdAnalyticsRoute = PollsPollIdAnalyticsRouteImport.update({
+  id: '/polls/$pollId/analytics',
+  path: '/polls/$pollId/analytics',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth/login': typeof AuthLoginRoute
+  '/auth/register': typeof AuthRegisterRoute
+  '/polls/new': typeof PollsNewRoute
+  '/dashboard/': typeof DashboardIndexRoute
+  '/polls/$pollId/analytics': typeof PollsPollIdAnalyticsRoute
+  '/polls/$pollId/results': typeof PollsPollIdResultsRoute
+  '/polls/$pollId/': typeof PollsPollIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth/login': typeof AuthLoginRoute
+  '/auth/register': typeof AuthRegisterRoute
+  '/polls/new': typeof PollsNewRoute
+  '/dashboard': typeof DashboardIndexRoute
+  '/polls/$pollId/analytics': typeof PollsPollIdAnalyticsRoute
+  '/polls/$pollId/results': typeof PollsPollIdResultsRoute
+  '/polls/$pollId': typeof PollsPollIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/auth/login': typeof AuthLoginRoute
+  '/auth/register': typeof AuthRegisterRoute
+  '/polls/new': typeof PollsNewRoute
+  '/dashboard/': typeof DashboardIndexRoute
+  '/polls/$pollId/analytics': typeof PollsPollIdAnalyticsRoute
+  '/polls/$pollId/results': typeof PollsPollIdResultsRoute
+  '/polls/$pollId/': typeof PollsPollIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/auth/login'
+    | '/auth/register'
+    | '/polls/new'
+    | '/dashboard/'
+    | '/polls/$pollId/analytics'
+    | '/polls/$pollId/results'
+    | '/polls/$pollId/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/auth/login'
+    | '/auth/register'
+    | '/polls/new'
+    | '/dashboard'
+    | '/polls/$pollId/analytics'
+    | '/polls/$pollId/results'
+    | '/polls/$pollId'
+  id:
+    | '__root__'
+    | '/'
+    | '/auth/login'
+    | '/auth/register'
+    | '/polls/new'
+    | '/dashboard/'
+    | '/polls/$pollId/analytics'
+    | '/polls/$pollId/results'
+    | '/polls/$pollId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthLoginRoute: typeof AuthLoginRoute
+  AuthRegisterRoute: typeof AuthRegisterRoute
+  PollsNewRoute: typeof PollsNewRoute
+  DashboardIndexRoute: typeof DashboardIndexRoute
+  PollsPollIdAnalyticsRoute: typeof PollsPollIdAnalyticsRoute
+  PollsPollIdResultsRoute: typeof PollsPollIdResultsRoute
+  PollsPollIdIndexRoute: typeof PollsPollIdIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +143,67 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard/': {
+      id: '/dashboard/'
+      path: '/dashboard'
+      fullPath: '/dashboard/'
+      preLoaderRoute: typeof DashboardIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/polls/new': {
+      id: '/polls/new'
+      path: '/polls/new'
+      fullPath: '/polls/new'
+      preLoaderRoute: typeof PollsNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/register': {
+      id: '/auth/register'
+      path: '/auth/register'
+      fullPath: '/auth/register'
+      preLoaderRoute: typeof AuthRegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/login': {
+      id: '/auth/login'
+      path: '/auth/login'
+      fullPath: '/auth/login'
+      preLoaderRoute: typeof AuthLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/polls/$pollId/': {
+      id: '/polls/$pollId/'
+      path: '/polls/$pollId'
+      fullPath: '/polls/$pollId/'
+      preLoaderRoute: typeof PollsPollIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/polls/$pollId/results': {
+      id: '/polls/$pollId/results'
+      path: '/polls/$pollId/results'
+      fullPath: '/polls/$pollId/results'
+      preLoaderRoute: typeof PollsPollIdResultsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/polls/$pollId/analytics': {
+      id: '/polls/$pollId/analytics'
+      path: '/polls/$pollId/analytics'
+      fullPath: '/polls/$pollId/analytics'
+      preLoaderRoute: typeof PollsPollIdAnalyticsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthLoginRoute: AuthLoginRoute,
+  AuthRegisterRoute: AuthRegisterRoute,
+  PollsNewRoute: PollsNewRoute,
+  DashboardIndexRoute: DashboardIndexRoute,
+  PollsPollIdAnalyticsRoute: PollsPollIdAnalyticsRoute,
+  PollsPollIdResultsRoute: PollsPollIdResultsRoute,
+  PollsPollIdIndexRoute: PollsPollIdIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
