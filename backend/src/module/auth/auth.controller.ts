@@ -66,6 +66,7 @@ export const refreshHandler = async (
   return ApiResponse.ok(res, "Access and refres token regenerated", {
     id: user.user.id,
     email: user.user.email,
+    firstName: user.user.firstName,
   });
 };
 
