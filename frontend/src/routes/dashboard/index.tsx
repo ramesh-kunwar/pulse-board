@@ -3,6 +3,7 @@ import { createFileRoute, useNavigate, Link } from '@tanstack/react-router'
 import { useAuth } from '#/context/AuthContext'
 import { useEffect, useState } from 'react'
 import { getPollsApi } from '#/features/polls/api/pollsApi'
+import { logoutApi } from '#/features/auth/api/authApi'
 
 type Poll = {
   id: string
@@ -52,10 +53,7 @@ function DashboardPage() {
           <span className="text-sm text-gray-600">Hi, {user.firstName}</span>
           <button
             onClick={async () => {
-              await fetch('http://localhost:4000/api/auth/sign-out', {
-                method: 'POST',
-                credentials: 'include',
-              })
+              await logoutApi()
               navigate({ to: '/auth/login' })
             }}
             className="text-sm text-red-500 hover:underline"

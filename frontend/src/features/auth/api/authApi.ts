@@ -14,3 +14,9 @@ export const registerApi = async (data: {
   })
   return response.data
 }
+
+// src/features/auth/api/authApi.ts — add this
+export const logoutApi = async () => {
+  const response = await api.post('/auth/logout')
+  return response.data
+}
